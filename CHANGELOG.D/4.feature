@@ -1,1 +1,0 @@
-Add CI job for release image build.
