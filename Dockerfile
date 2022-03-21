@@ -1,5 +1,7 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
 
+LABEL org.opencontainers.image.source = "https://github.com/neuro-inc/docker-registry-frontend"
+
 ENV SOURCE_DIR /app
 WORKDIR $SOURCE_DIR
 
