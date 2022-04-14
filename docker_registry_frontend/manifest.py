@@ -9,7 +9,10 @@ class DockerRegistryManifest(abc.ABC):
         self._content = content
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and self._dict_as_str() == other._dict_as_str()
+        return (
+            self.__class__ == other.__class__
+            and self._dict_as_str() == other._dict_as_str()
+        )
 
     def __hash__(self):
         return self._dict_as_str().__hash__()
@@ -37,10 +40,10 @@ class DockerRegistrySchema1Manifest(DockerRegistryManifest):
     def __get_sorted_history(self):
         history = []
 
-        for entry in self._content['history']:
-            history.append(json.loads(entry['v1Compatibility']))
+        for entry in self._content["history"]:
+            history.append(json.loads(entry["v1Compatibility"]))
 
-        history.sort(key=lambda x: x['created'], reverse=True)
+        history.sort(key=lambda x: x["created"], reverse=True)
         return history
 
     def __get_first_value(self, *keys):
@@ -52,27 +55,27 @@ class DockerRegistrySchema1Manifest(DockerRegistryManifest):
         return None
 
     def get_created_date(self):
-        return self.__get_first_value('created')
+        return self.__get_first_value("created")
 
     def get_docker_version(self):
-        return self.__get_first_value('docker_version')
+        return self.__get_first_value("docker_version")
 
     def get_entrypoint(self):
-        return self.__get_first_value('config', 'Entrypoint')
+        return self.__get_first_value("config", "Entrypoint")
 
     def get_exposed_ports(self):
-        return self.__get_first_value('config', 'ExposedPorts')
+        return self.__get_first_value("config", "ExposedPorts")
 
     def get_layer_ids(self):
         layer_ids = []
 
-        for layer in self._content['fsLayers']:
-            layer_ids.append(layer['blobSum'])
+        for layer in self._content["fsLayers"]:
+            layer_ids.append(layer["blobSum"])
 
         return set(layer_ids)
 
     def get_volumes(self):
-        return self.__get_first_value('config', 'Volumes')
+        return self.__get_first_value("config", "Volumes")
 
 
 class DockerRegistrySchema2Manifest:
@@ -80,7 +83,10 @@ class DockerRegistrySchema2Manifest:
         self._content = content
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and self._dict_as_str() == other._dict_as_str()
+        return (
+            self.__class__ == other.__class__
+            and self._dict_as_str() == other._dict_as_str()
+        )
 
     def __hash__(self):
         return self._dict_as_str().__hash__()
@@ -94,25 +100,30 @@ class DockerRegistrySchema2Manifest:
     def get_layer_ids(self):
         layer_ids = []
 
-        for layer in self._content['layers']:
-            layer_ids.append(layer['digest'])
+        for layer in self._content["layers"]:
+            layer_ids.append(layer["digest"])
 
         return set(layer_ids)
 
     def get_size(self):
-        return sum([layer["size"] for layer in self._content["layers"]])
+        return sum(layer["size"] for layer in self._content["layers"])
 
 
-class DockerRegistryCombinedManifest():
-    def __init__(self, v1manifest: DockerRegistrySchema1Manifest,
-                 v2manifest: DockerRegistrySchema2Manifest):
+class DockerRegistryCombinedManifest:
+    def __init__(
+        self,
+        v1manifest: DockerRegistrySchema1Manifest,
+        v2manifest: DockerRegistrySchema2Manifest,
+    ):
         self._v1manifest = v1manifest
         self._v2manifest = v2manifest
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and \
-               self._v1manifest == other._v1manifest and \
-               self._v2manifest == other._v2manifest
+        return (
+            self.__class__ == other.__class__
+            and self._v1manifest == other._v1manifest
+            and self._v2manifest == other._v2manifest
+        )
 
     def get_created_date(self):
         return self._v1manifest.get_created_date()
@@ -140,10 +151,11 @@ class DockerRegistryCombinedManifest():
 
 
 def make_manifest(content):
-    if content['schemaVersion'] == 1:
+    if content["schemaVersion"] == 1:
         return DockerRegistrySchema1Manifest(content)
-    elif content['schemaVersion'] == 2:
+    elif content["schemaVersion"] == 2:
         return DockerRegistrySchema2Manifest(content)
     else:
         raise ValueError(
-            f"Unsupported manifest schema version: {content['schemaVersion']}")
+            f"Unsupported manifest schema version: {content['schemaVersion']}"
+        )

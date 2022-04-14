@@ -2,6 +2,14 @@ VERSION_FILE := version.txt
 
 setup init:
 	pip install -r requirements/base.txt -r requirements/dev.txt
+	pre-commit install
+
+.PHONY: lint
+lint: format
+
+.PHONY: format
+format:
+	pre-commit run --all-files --show-diff-on-failure
 
 .PHONY: get-version
 get-version:
