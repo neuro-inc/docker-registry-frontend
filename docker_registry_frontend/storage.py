@@ -1,7 +1,6 @@
 import abc
 import json
 import os
-import sqlite3
 
 from docker_registry_frontend.registry import make_registry
 
@@ -40,23 +39,23 @@ class DockerRegistryJsonFileStorage(DockerRegistryWebStorage):
         self.__json_file = file_path
 
         if not os.path.exists(self.__json_file) and not os.path.isdir(self.__json_file):
-            with open(self.__json_file, 'w') as f:
+            with open(self.__json_file, "w") as f:
                 json.dump({}, f)
 
         self.__read()
 
     def __read(self):
-        with open(self.__json_file, 'r') as json_f:
+        with open(self.__json_file) as json_f:
             return json.load(json_f)
 
     def get_registries(self):
         registries = {}
         for identifier, config in self.__read().items():
             registries[identifier] = make_registry(
-                config['name'],
-                config['url'],
-                config.get('user', None),
-                config.get('password', None)
+                config["name"],
+                config["url"],
+                config.get("user", None),
+                config.get("password", None),
             )
 
         return registries
@@ -69,7 +68,7 @@ class DockerRegistryEnvStorage(DockerRegistryWebStorage):
                 name=os.environ["DOCKER_REGISTRY_FRONTEND_NAME"],
                 url=os.environ["DOCKER_REGISTRY_FRONTEND_URL"],
                 user=os.environ["DOCKER_REGISTRY_FRONTEND_USER"],
-                password=os.environ["DOCKER_REGISTRY_FRONTEND_PASSWORD"]
+                password=os.environ["DOCKER_REGISTRY_FRONTEND_PASSWORD"],
             )
         }
 

@@ -11,7 +11,9 @@ RUN apk add --no-cache \
       --virtual .build-deps \
       nodejs-npm \
       git \
+      libffi-dev \
       build-base && \
+    pip install -U pip && \
     pip install --no-cache-dir -r $SOURCE_DIR/base.txt && \
     npm install -g bower && \
     bower --allow-root install && \
