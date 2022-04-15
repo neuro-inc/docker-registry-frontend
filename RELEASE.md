@@ -23,19 +23,6 @@ Instructions:
     - `git commit -m "Update version and changelog for $(cat version.txt) release"` - commit changelog changes in **local** repository
     - `git tag $(cat version.txt)` - mark latest changes as a release tag
     - `git push && git push --tags` - push the updated changelog and assigned tag to the remote repository
-    - Note, this `master` branch update will trigger CI
+    - Note, new tag pushed to GitHub will trigger [CD](https://github.com/neuro-inc/docker-registry-frontend/actions/workflows/cd.yaml).
 
-4. Now, hard-reset `release` branch on `master` (actual release):
-    ```
-    $ git checkout release
-    $ git reset --hard master
-    $ git push  # no need to push --force since `release` will move only forward
-    ```
-5. Once `release` is green, test it via `neuro run --pass-config --http-port 80 --browse ghcr.io/neuro-inc/docker-registry-frontend:pipelines`, and if everything's fine,
-    publish new release to Slack: `#platform-feedback`.
-
-Notes:
-------
-
-- When CI is triggered:
-    - Each new commit to `master` and `release`.
+4. Once CD action completed, test it via `neuro run --pass-config --http-port 80 --browse ghcr.io/neuro-inc/docker-registry-frontend:pipelines` and by running the app from the platform dashboard.
