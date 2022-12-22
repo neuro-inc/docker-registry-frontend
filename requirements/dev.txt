@@ -1,2 +1,2 @@
 pre-commit==2.18.1
-towncrier==21.9.0
+towncrier==22.12.0
